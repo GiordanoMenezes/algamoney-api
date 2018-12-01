@@ -10,6 +10,7 @@ import com.algaworks.algamoney.api.model.Pessoa;
 import com.algaworks.algamoney.api.repository.PessoaRepository;
 import com.algaworks.algamoney.api.service.PessoaService;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,18 +65,15 @@ public class PessoaResource {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read') ")
     public ResponseEntity<Pessoa> buscaPessoa(@PathVariable Long id) {
-        // Optional<Pessoa> pessoa = pessoaRepository.findById(id);
-        Pessoa pessoa = pessoaRepository.findOne(id);
-        //     return !pessoa.isPresent()?ResponseEntity.notFound().build():ResponseEntity.ok(pessoa.get());
-        return pessoa == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(pessoa);
+         Optional<Pessoa> pessoa = pessoaRepository.findById(id);
+         return !pessoa.isPresent()?ResponseEntity.notFound().build():ResponseEntity.ok(pessoa.get());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_REMOVER_PESSOA') and #oauth2.hasScope('write') ")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluiPessoa(@PathVariable Long id) {
-        //     pessoaRepository.deleteById(id);
-        pessoaRepository.delete(id);
+             pessoaRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")

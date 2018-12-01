@@ -12,6 +12,7 @@ import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import com.algaworks.algamoney.api.repository.lancamento.LancamentoRepository;
 import com.algaworks.algamoney.api.service.LancamentoService;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +62,8 @@ public class LancamentoResource {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read') ")
     public ResponseEntity<Lancamento> buscaLancamento(@PathVariable Long id) {
-        //    Optional<Lancamento> lanc = lancRepository.findById(id);
-        Lancamento lanc = lancRepository.findOne(id);
-        //   return lanc.isPresent() ? ResponseEntity.ok(lanc.get()) : ResponseEntity.notFound().build();
-        return lanc != null ? ResponseEntity.ok(lanc) : ResponseEntity.notFound().build();
+           Optional<Lancamento> lanc = lancRepository.findById(id);
+           return lanc.isPresent() ? ResponseEntity.ok(lanc.get()) : ResponseEntity.notFound().build();
     }
 
     @PostMapping()
@@ -78,8 +77,7 @@ public class LancamentoResource {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write') ")
     public ResponseEntity<Void> deleteLancamento(@PathVariable Long id) {
-        //  lancRepository.deleteById(id);
-        lancRepository.delete(id);
+          lancRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 

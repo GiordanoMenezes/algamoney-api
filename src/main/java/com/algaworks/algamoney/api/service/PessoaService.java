@@ -35,12 +35,7 @@ public class PessoaService {
     }
 
     private Pessoa buscarPessoaPorCodigo(Long id) {
-        //     Optional<Pessoa> op = pessoaRep.findById(id);
-        Pessoa op = pessoaRep.findOne(id);
-        //    return op.orElseThrow(()-> new EmptyResultDataAccessException("Id da pessoa passada na requisição não existe na base de dados", 1));       
-        if (op == null) {
-            throw new EmptyResultDataAccessException("Id da pessoa passada na requisição não existe na base de dados", 1);
-        }
-        return op;
+        Optional<Pessoa> op = pessoaRep.findById(id);
+        return op.orElseThrow(()-> new EmptyResultDataAccessException("Id da pessoa passada na requisição não existe na base de dados", 1));       
     }
 }
