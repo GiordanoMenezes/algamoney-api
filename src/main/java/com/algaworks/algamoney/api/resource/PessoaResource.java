@@ -7,7 +7,8 @@ package com.algaworks.algamoney.api.resource;
 
 import com.algaworks.algamoney.api.event.RecursoCriadoEvent;
 import com.algaworks.algamoney.api.model.Pessoa;
-import com.algaworks.algamoney.api.repository.PessoaRepository;
+import com.algaworks.algamoney.api.repository.filter.PessoaFilter;
+import com.algaworks.algamoney.api.repository.pessoa.PessoaRepository;
 import com.algaworks.algamoney.api.service.PessoaService;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,10 +48,16 @@ public class PessoaResource {
     @Autowired
     ApplicationEventPublisher publisher;
 
-    @GetMapping
+    @GetMapping("/allorderbynome")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read') ")
     public List<Pessoa> listAll() {
-        return pessoaRepository.findAll();
+        return pessoaRepository.findAllByOrderByNome();
+    }
+    
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read') ")
+    public Page<Pessoa> filtrar(PessoaFilter pessoaFilter, Pageable pageable) {
+        return pessoaRepository.filtrar(pessoaFilter, pageable);
     }
 
     @PostMapping
@@ -57,7 +66,7 @@ public class PessoaResource {
         Pessoa pesSalva = pessoaRepository.save(pessoa);
 
         //Estamos disparando o evento RecursoCriadoEvent para setarmos a uri da pessoa salva no Location do Header  
-        publisher.publishEvent(new RecursoCriadoEvent(this, response, pesSalva.getId()));
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, pesSalva.getCodigo()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pesSalva);
     }

@@ -41,7 +41,7 @@ public class CategoriaResource {
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read') ")
     public List<Categoria> listAll() {
-        return catRepository.findAll();
+        return catRepository.findAllByOrderByNomeAsc();
     }
 
     @PostMapping
@@ -50,7 +50,7 @@ public class CategoriaResource {
         Categoria catSalva = catRepository.save(cat);
 
         //Estamos disparando o evento RecursoCriadoEvent para setarmos a uri da categoria salva no Location do Header
-        publisher.publishEvent(new RecursoCriadoEvent(this, response, catSalva.getId()));
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, catSalva.getCodigo()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(catSalva);
     }

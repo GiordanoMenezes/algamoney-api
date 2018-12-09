@@ -49,7 +49,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
         criteriaQuery.where(predicados);
 
-        if (pageable.getSort() != null) {
+        if (pageable.getSort() != null && !"UNSORTED".equals(pageable.getSort().toString())) {
             String ordemString = pageable.getSort().toString();
             String[] ordemStringd = StringUtils.split(ordemString, ":");
             String orderfield = ordemStringd[0];
@@ -75,7 +75,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
         Root<Lancamento> root = criteria.from(Lancamento.class);
 
         criteria.select(builder.construct(LancamentoResumoDTO.class,
-                root.get("id"), root.get("descricao"), root.get("dataVencimento"),
+                root.get("codigo"), root.get("descricao"), root.get("dataVencimento"),
                 root.get("dataPagamento"), root.get("valor"), root.get("tipo"),
                 root.get("categoria").get("nome"), root.get("pessoa").get("nome")));
 
@@ -83,7 +83,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
         criteria.where(predicados);
 
-        if (pageable.getSort() != null) {
+        if (pageable.getSort() != null && !"UNSORTED".equals(pageable.getSort().toString())) {
             String ordemString = pageable.getSort().toString();
             String[] ordemStringd = StringUtils.split(ordemString, ":");
             String orderfield = ordemStringd[0];

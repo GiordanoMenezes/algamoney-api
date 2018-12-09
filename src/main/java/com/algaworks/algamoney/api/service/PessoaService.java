@@ -6,7 +6,7 @@
 package com.algaworks.algamoney.api.service;
 
 import com.algaworks.algamoney.api.model.Pessoa;
-import com.algaworks.algamoney.api.repository.PessoaRepository;
+import com.algaworks.algamoney.api.repository.pessoa.PessoaRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,7 +24,7 @@ public class PessoaService {
 
     public Pessoa atualizaPessoa(Pessoa pessoa, Long id) {
         buscarPessoaPorCodigo(id);
-        pessoa.setId(id);
+        pessoa.setCodigo(id);
         return pessoaRep.save(pessoa);
     }
 

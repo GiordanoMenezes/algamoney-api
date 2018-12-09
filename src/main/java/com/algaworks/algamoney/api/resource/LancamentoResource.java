@@ -11,7 +11,6 @@ import com.algaworks.algamoney.api.model.Lancamento;
 import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import com.algaworks.algamoney.api.repository.lancamento.LancamentoRepository;
 import com.algaworks.algamoney.api.service.LancamentoService;
-import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -22,10 +21,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,7 +71,7 @@ public class LancamentoResource {
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write') ")
     public ResponseEntity<Lancamento> addLancamento(@RequestBody @Valid Lancamento lancamento, HttpServletResponse response) {
         Lancamento lancSalvo = lancService.novoLancamento(lancamento);
-        publisher.publishEvent(new RecursoCriadoEvent(this, response, lancSalvo.getId()));
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, lancSalvo.getCodigo()));
         return ResponseEntity.status(HttpStatus.CREATED).body(lancSalvo);
     }
 
@@ -79,6 +80,13 @@ public class LancamentoResource {
     public ResponseEntity<Void> deleteLancamento(@PathVariable Long id) {
           lancRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+   
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write') ")
+    public ResponseEntity<Lancamento> atualizaLancamento(@Valid @RequestBody Lancamento lancamento, @PathVariable Long id) {
+        Lancamento lancamentoSalvo = lancService.atualizaLancamento(lancamento, id);
+        return ResponseEntity.ok(lancamentoSalvo);
     }
 
 }

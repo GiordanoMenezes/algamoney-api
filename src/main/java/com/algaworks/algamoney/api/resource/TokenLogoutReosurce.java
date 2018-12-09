@@ -5,18 +5,13 @@
  */
 package com.algaworks.algamoney.api.resource;
 
-import com.algaworks.algamoney.api.model.Usuario;
-import com.algaworks.algamoney.api.repository.UsuarioRepository;
-import java.security.Principal;
-import java.util.Optional;
+import com.algaworks.algamoney.api.config.property.AlgamoneyApiProperty;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,23 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenLogoutReosurce {
     
     @Autowired
-    private UsuarioRepository usuarioRepository;
-    
-    @GetMapping("/user/me")
-    public ResponseEntity<Usuario> getUsuarioAtual(HttpServletRequest req) {
-        Principal principal = req.getUserPrincipal();
-        String usuNome = principal.getName();
-        Optional<Usuario> usuoptional = usuarioRepository.findByEmail(usuNome);
-        Usuario usuario = usuoptional.orElseThrow(() ->new RuntimeException("Info de usuário logado não foram acessíveis."));
-        
-        return ResponseEntity.ok(usuario);
-    }
+    AlgamoneyApiProperty algamoneyproperty;
     
     @DeleteMapping("/invalidate")
     public void invalidar(HttpServletRequest req, HttpServletResponse resp) {
         Cookie cookie = new Cookie("refreshToken",null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); //TODO: Em producao será true
+        cookie.setSecure(algamoneyproperty.getSeguranca().isEnableHttps()); 
         cookie.setMaxAge(0);
         cookie.setPath(req.getContextPath()+"/oauth/token");
         

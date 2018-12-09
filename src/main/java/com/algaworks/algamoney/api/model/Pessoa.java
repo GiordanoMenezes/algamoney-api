@@ -31,8 +31,8 @@ public class Pessoa implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "codigo")
+    private Long codigo;
 
     @Basic(optional = false)
     @NotNull(message = "Nome da pessoa é obrigatório")
@@ -52,15 +52,15 @@ public class Pessoa implements Serializable {
     }
 
     public Pessoa(Long id) {
-        this.id = id;
+        this.codigo = id;
     }
 
-    public Long getId() {
-        return id;
+    public Long getCodigo() {
+        return codigo;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
     }
 
     public String getNome() {
@@ -90,18 +90,18 @@ public class Pessoa implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (codigo != null ? codigo.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the codigo fields are not set
         if (!(object instanceof Pessoa)) {
             return false;
         }
         Pessoa other = (Pessoa) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.codigo == null && other.codigo != null) || (this.codigo != null && !this.codigo.equals(other.codigo))) {
             return false;
         }
         return true;
@@ -109,7 +109,7 @@ public class Pessoa implements Serializable {
 
     @Override
     public String toString() {
-        return "Pessoa[ id=" + id + " ]";
+        return "Pessoa[ id=" + codigo + " ]";
     }
 
 }

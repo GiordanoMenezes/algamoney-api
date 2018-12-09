@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.algaworks.algamoney.api.token;
+package com.algaworks.algamoney.api.security.token;
 
+import com.algaworks.algamoney.api.config.property.AlgamoneyApiProperty;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -26,6 +28,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  */
 @ControllerAdvice
 public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2AccessToken>  {
+    
+    @Autowired
+    AlgamoneyApiProperty algamoneyproperty;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> type) {
@@ -49,7 +54,7 @@ public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2Acces
     private void adicionarRefreshTokenNoCookie(String refreshtoken, HttpServletRequest sreq, HttpServletResponse sresp) {
             Cookie refreshTokenCookie = new Cookie("refreshToken", refreshtoken);
             refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setSecure(false); // TODO: Mudar para true em produção
+            refreshTokenCookie.setSecure(algamoneyproperty.getSeguranca().isEnableHttps()); 
             refreshTokenCookie.setPath(sreq.getContextPath()+"/oauth/token");
             refreshTokenCookie.setMaxAge(60*60*24*30);
             sresp.addCookie(refreshTokenCookie);

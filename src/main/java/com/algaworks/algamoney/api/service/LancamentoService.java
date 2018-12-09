@@ -8,7 +8,7 @@ package com.algaworks.algamoney.api.service;
 import com.algaworks.algamoney.api.model.Lancamento;
 import com.algaworks.algamoney.api.model.Pessoa;
 import com.algaworks.algamoney.api.repository.lancamento.LancamentoRepository;
-import com.algaworks.algamoney.api.repository.PessoaRepository;
+import com.algaworks.algamoney.api.repository.pessoa.PessoaRepository;
 import com.algaworks.algamoney.api.service.exception.LancamentoPessoaInativaException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class LancamentoService {
 
     public Lancamento atualizaLancamento(Lancamento lanc, Long id) {
         buscarLancamentoPorCodigo(id);
-        lanc.setId(id);
+        lanc.setCodigo(id);
         return lancamentoRep.save(lanc);
     }
 
@@ -40,7 +40,7 @@ public class LancamentoService {
     }
 
     public Lancamento novoLancamento(Lancamento lancto) {
-             Optional<Pessoa> opessoa = pessoaRep.findById(lancto.getPessoa().getId());
+             Optional<Pessoa> opessoa = pessoaRep.findById(lancto.getPessoa().getCodigo());
              Pessoa pessoa = opessoa.orElseThrow(() -> new LancamentoPessoaInativaException("Lançamento com pessoa inexistente."));
         if (!pessoa.getAtivo()) {
             throw new LancamentoPessoaInativaException("Pessoa inativa para Lançamento.");
