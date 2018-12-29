@@ -5,8 +5,14 @@
  */
 package com.algaworks.algamoney.api.repository.lancamento;
 
+import com.algaworks.algamoney.api.model.Categoria;
+import com.algaworks.algamoney.api.model.DTO.LancTotalporCategoriaDTO;
+import com.algaworks.algamoney.api.model.DTO.LancTotalporDiaDTO;
 import com.algaworks.algamoney.api.model.DTO.LancamentoResumoDTO;
+import com.algaworks.algamoney.api.model.DTO.LancamentoporPessoaDTO;
 import com.algaworks.algamoney.api.model.Lancamento;
+import com.algaworks.algamoney.api.model.Pessoa;
+import com.algaworks.algamoney.api.model.TipoLancamento;
 import com.algaworks.algamoney.api.repository.filter.LancamentoFilter;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -142,6 +148,72 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
         return predicados.toArray(new Predicate[predicados.size()]);
 
+    }
+    
+    @Override
+    public List<LancTotalporCategoriaDTO> totalPorCategoriaPeriodo(LocalDate dataIni,LocalDate dataFim) {
+        
+    //    LocalDate datainicial = LocalDate.parse(dataIni);
+    //    LocalDate datafinal = LocalDate.parse(dataFim);
+          
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<LancTotalporCategoriaDTO> criteria = cb.createQuery(LancTotalporCategoriaDTO.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        
+        criteria.select(cb.construct(LancTotalporCategoriaDTO.class,
+                root.<Categoria>get("categoria"),cb.sum(root.get("valor"))));
+        
+        criteria.where(cb.greaterThanOrEqualTo(root.<LocalDate>get("dataVencimento"),dataIni),
+        cb.lessThanOrEqualTo(root.<LocalDate>get("dataVencimento"),dataFim));
+        
+        criteria.groupBy(root.<Categoria>get("categoria"));
+        
+        TypedQuery<LancTotalporCategoriaDTO> tquery = em.createQuery(criteria);
+        return tquery.getResultList();
+    }
+    
+    @Override
+    public List<LancTotalporDiaDTO> totalPorDiaPeriodo(LocalDate dataIni,LocalDate dataFim) {
+        
+     //   LocalDate datainicial = LocalDate.parse(dataIni);
+    //    LocalDate datafinal = LocalDate.parse(dataFim);
+          
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<LancTotalporDiaDTO> criteria = cb.createQuery(LancTotalporDiaDTO.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        
+        criteria.select(cb.construct(LancTotalporDiaDTO.class,root.<TipoLancamento>get("tipo"),
+                root.<LocalDate>get("dataVencimento"),cb.sum(root.get("valor"))));
+        
+        criteria.where(cb.greaterThanOrEqualTo(root.<LocalDate>get("dataVencimento"),dataIni),
+        cb.lessThanOrEqualTo(root.<LocalDate>get("dataVencimento"),dataFim));
+        
+        criteria.groupBy(root.<TipoLancamento>get("dataVencimento"),root.<LocalDate>get("tipo"));
+        
+        TypedQuery<LancTotalporDiaDTO> tquery = em.createQuery(criteria);
+        return tquery.getResultList();
+    }
+    
+    @Override
+    public List<LancamentoporPessoaDTO> totalPorPessoaPeriodo(LocalDate dataIni,LocalDate dataFim) {
+        
+     //   LocalDate datainicial = LocalDate.parse(dataIni);
+     //   LocalDate datafinal = LocalDate.parse(dataFim);
+          
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<LancamentoporPessoaDTO> criteria = cb.createQuery(LancamentoporPessoaDTO.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        
+        criteria.select(cb.construct(LancamentoporPessoaDTO.class,
+                root.<TipoLancamento>get("tipo"),root.<Pessoa>get("pessoa"),cb.sum(root.get("valor"))));
+        
+        criteria.where(cb.greaterThanOrEqualTo(root.<LocalDate>get("dataVencimento"),dataIni),
+        cb.lessThanOrEqualTo(root.<LocalDate>get("dataVencimento"),dataFim));
+        
+        criteria.groupBy(root.<Pessoa>get("pessoa"),root.<LocalDate>get("tipo"));
+        
+        TypedQuery<LancamentoporPessoaDTO> tquery = em.createQuery(criteria);
+        return tquery.getResultList();
     }
 
 }
